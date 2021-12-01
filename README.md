@@ -1,3 +1,6 @@
+# 211201, ETRI 음성인식 수업, ESPNet을 이용해서 ASR을 만든다.
+
+
 # https://github.com/pkyoung/a1003
 
 

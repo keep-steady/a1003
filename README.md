@@ -50,6 +50,7 @@
 # Train ASR
 
 ## Choie: Set training corpus
+    데이터 양 결정, 모두 학습하긴 부담스러우니 쪼개서 학습해보자
 
     cat data/ks/uttid.01 data/ks/uttid.03 data/ks/uttid.05 > data/ks/uttid.train
     cat data/ks/uttid.01 data/ks/uttid.03 > data/ks/uttid.train
@@ -59,25 +60,35 @@
 
     source path.sh
     mkdir -p data/train data/test data/dev
+    
+    # wav.scp 만들기, ex) KsponSpeech_E00001 /home/work/a1003/db/NIA2019_KSPONSPEECH/eval_clean/KsponSpeech_E00001.wav
     filter_scp.pl data/ks/uttid.test data/ks/wav.scp > data/test/wav.scp
     filter_scp.pl data/ks/uttid.dev data/ks/wav.scp > data/dev/wav.scp
     filter_scp.pl data/ks/uttid.train data/ks/wav.scp > data/train/wav.scp
+    
+    # text 만들기, ex) KsponSpeech_E00001 어 일단은 억지로 과장해서 이렇게 하는 것보다 진실된 마음으로 이걸 어떻게 전달할 수 있을까 공감을 시킬 수 있을까 해서 좀
+
     filter_scp.pl data/ks/uttid.test data/ks/text > data/test/text
     filter_scp.pl data/ks/uttid.dev data/ks/text > data/dev/text
     filter_scp.pl data/ks/uttid.train data/ks/text > data/train/text
+    
+    # spk2utt 만들기, ex) KsponSpeech_E00001 KsponSpeech_E00001
     awk '{print $1 " " $1}' data/test/wav.scp > data/test/spk2utt
     awk '{print $1 " " $1}' data/dev/wav.scp > data/dev/spk2utt
     awk '{print $1 " " $1}' data/train/wav.scp > data/train/spk2utt
+    
+    # spk2utt를 복사해서 그대로 utt2spk를 복사
     cp data/test/spk2utt data/test/utt2spk
     cp data/dev/spk2utt data/dev/utt2spk
     cp data/train/spk2utt data/train/utt2spk
 
 ## Run training
-
+    # 위에서 준비한 데이터로 학습데이터 구축
     ./steps/make_fbank.sh data/test
     ./steps/make_fbank.sh data/dev
     ./steps/make_fbank.sh data/train
 
+    # 학습!!!, stage 3, 9, 10등 각각 학습방법 설정이 있다. asr파일 열어서 뭘 돌릴지 체크해보자
     bash stage3-5.sh
     bash stage9.sh
     bash stage10.sh
@@ -93,6 +104,9 @@
     ## tensorboard 위치는 환경에 맞게
     ## train.1 은 아무 이름이나 구분되는 이름으로
     ln -s /home/work/train.1/exp/exp01a/tensorboard ./logs/train.1
+    
+    >> tensorboard --logdir exp/~~
+    
 
 # Testing
 
@@ -111,7 +125,7 @@
 
 * Edit inference.sh and run it
 
-    ./inference.sh
+    ./inference.sh  # 입출력, 모델경로 
 
 * Measure WER and CER
 

@@ -1,5 +1,12 @@
 # 211201, ETRI 음성인식 수업, ESPNet을 이용해서 ASR을 만든다.
 
+12000시간으로 학습해도 wer 16 음성데이터가 어마어마하게 많아야 하고 질도 중요하다. 함부로 접근하지 말자
+
+숫자를 다 한글로, '?, !'등은 없애고 학습하는게 더 좋다. 한글은 글자단위로, 영어는 sentencepiece 단위로 학습한다.
+
+음성을 Kaldi로 melspectrogram으로 변환한 후 CNN(256dim)+Transformer(n=12)로 sequence를 생성한다
+
+
 
 # https://github.com/pkyoung/a1003
 
@@ -157,8 +164,22 @@
     model=/home/work/a1003/models/ref3x/valid.acc.ave_10best.pth
 
     bash inference.sh
+    
+    inference.sh 파일에서 아래 부분의 데이터, 모델경로 수정
+    # Configuraiton
+    idir=data/mydata
+    odir=./result
+    model=exp/exp01a/42epoch.pth
+    nj=8
+
+    # End of Configuraiton
+    source path.sh  # 꼭 추가
+    mkdir -p $odir/log
+    mdir=$(dirname $model)
 
 * Measure CER/WER
 
-    python local/uttcer.py data/mydata/text result/text
+    python local/uttcer.py data/mydata/text result/text  # 정답txt, 추론txt
+    python local/uttwer.py data/mydata/text result/text  # 정답txt, 추론txt
+    
 
